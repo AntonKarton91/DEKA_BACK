@@ -16,17 +16,17 @@ router.register(r'users', UserViewSet)
 router.register(r'comment', CommentViewSet)
 router.register(r'columnlist', ColumnListApi)
 router.register(r'task', TaskListApi)
-# router.register(r'addtask', AddTaskAPI)
+router.register(r'taskdetail', TaskDetailViewSet)
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('main/', include('main.urls')),
     path('api/v1/addcolumn/', AddColumnAPIView.as_view()),
-    # path('api/v1/columnlist/<int:pk>/', ColumnListApi.as_view()),
     path('api/v1/list/', ColumnANDListApi.as_view()),
     path('api/v1/addtask/', AddTaskAPI.as_view()),
     path('api/v1/register/', CreateUser.as_view()),
-    # path('api/v1/dnd/', DNDView.as_view()),
+    path('api/v1/dnd/', DNDView.as_view()),
     path('api/v1/', include(router.urls)),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),

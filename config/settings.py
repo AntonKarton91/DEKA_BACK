@@ -73,6 +73,15 @@ DATABASES = {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.postgresql_psycopg2',
+    #     'NAME': 'DEKA_DB',
+    #     'USER': 'postgres',
+    #     'PASSWORD': '1234',
+    #     'HOST': 'localhost',
+    #     'PORT': '',
+    #
+    # }
 }
 
 AUTH_PASSWORD_VALIDATORS = [

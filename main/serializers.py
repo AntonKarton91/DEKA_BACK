@@ -47,7 +47,7 @@ class TaskDetailSerializer(ModelSerializer):
 
     class Meta:
         model = Tasks
-        fields = ['id', 'taskPosition', 'name', 'participants', 'marks',
+        fields = ['id', 'name', 'participants', 'marks',
                   'date', "column", "taskDescription", "comments", "creater"]
 
 

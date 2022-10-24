@@ -44,7 +44,8 @@ class TableColumns(models.Model):
     columnName = models.CharField(max_length=255, default='Новая колонка')
     columnType = models.CharField(max_length=200, choices=TYPE)
     columnPosition = models.IntegerField(blank=True, null=True)
-    order = models.CharField(max_length=255, default=[])
+    order = models.JSONField()
+
 
     class Meta:
         verbose_name = 'Колонка'
@@ -76,7 +77,7 @@ class Tasks(models.Model):
     participants = models.ManyToManyField(CustomUser, related_name='parts', blank=True, null=True)
     time_create = models.DateTimeField(auto_now_add=True)
     time_update = models.DateTimeField(auto_now=True)
-    date = models.DateTimeField(auto_now_add=True)
+    date = models.DateTimeField()
     taskPosition = models.IntegerField(blank=True, null=True)
     marks = models.ManyToManyField(Marks, related_name='marks', blank=True, null=True)
 

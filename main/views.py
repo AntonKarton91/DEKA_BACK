@@ -1,5 +1,9 @@
+import base64
+import json
+
 from django.shortcuts import render
 from django.forms.models import model_to_dict
+import pickle
 from django.views.generic import TemplateView
 from rest_framework import viewsets, status
 from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView, UpdateAPIView, \
@@ -35,26 +39,6 @@ class CreateUser(APIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class AddColumnAPIView(APIView):
-    def post(self, request):
-        print(request.data)
-        # request.data['order'] = str(request.data['order'])
-        serializer = ColumnSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-class ColumnListApi(viewsets.ModelViewSet):
-    queryset = TableColumns.objects.all()
-    serializer_class = ColumnSerializer
-
-
-# class DNDView(APIView):
-#
-#         return Response({"posts": 1})
-
 
 class ColumnANDListApi(APIView):
 
@@ -65,13 +49,21 @@ class ColumnANDListApi(APIView):
         column_serializer = column_serializer_class(column_queryset, many=True)
         task_serializer_class = TasksSerializer
         task_serializer = task_serializer_class(task_queryset, many=True)
-
         response_results = {
             "columns": column_serializer.data,
             "tasks": task_serializer.data,
         }
-
         return Response(response_results)
+
+
+class AddColumnAPIView(APIView):
+    def post(self, request):
+        serializer = ColumnSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class AddTaskAPI(APIView):
@@ -81,19 +73,50 @@ class AddTaskAPI(APIView):
         task_serializer.save()
         task_id = Tasks.objects.get(id=task_serializer.data['id']).id
         column = TableColumns.objects.get(id=request.data['column'])
+
         order = column.order
-        if len(order) == 2:
-            order = order[:-1] + str(task_id) + ', ' + order[-1:]
-        else:
-            order = order[:-1] + str(task_id) + ', ' + order[-1:]
+        order.append(task_id)
         column.order = order
         column.save()
-        print(order)
+
         resp ={
             'task': task_serializer.data,
             'order': order
         }
         return Response(resp, status=status.HTTP_201_CREATED)
+
+
+
+class DNDView(APIView):
+
+    def post(self, request):
+        col_to_data = request.data['colTo']
+        task_data = request.data['cart']
+        task = Tasks.objects.get(id=task_data['id'])
+        task.column_id = col_to_data['id']
+        task.save()
+        col_from_data = request.data['colFrom']
+        column_from = TableColumns.objects.get(id=col_from_data['id'])
+        column_from.order = col_from_data['orderFrom']
+        column_from.save()
+        column_to = TableColumns.objects.get(id=col_to_data['id'])
+        column_to.order = col_to_data['orderTo']
+        column_to.save()
+        return Response({"posts": 1})
+
+
+
+
+
+
+
+
+
+
+class ColumnListApi(viewsets.ModelViewSet):
+    queryset = TableColumns.objects.all()
+    serializer_class = ColumnSerializer
+
 
 
 
@@ -121,3 +144,7 @@ class CommentViewSet(viewsets.ModelViewSet):
 class TaskDetailViewSet(viewsets.ModelViewSet):
     queryset = Tasks.objects.all()
     serializer_class = TaskDetailSerializer
+
+    def update(self, request, pk=None):
+        print(request.data)
+        return super().update(request, pk=None)
